@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SpeedTyping = () => {
@@ -22,7 +22,7 @@ const SpeedTyping = () => {
     "Practice makes perfect, especially when learning to type faster and more accurately."
   ];
 
-  const generateNewText = () => {
+  const generateNewText = useCallback(() => {
     const randomText = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
     setText(randomText);
     setUserInput('');
@@ -31,7 +31,7 @@ const SpeedTyping = () => {
     setIsStarted(false);
     setWpm(0);
     setAccuracy(100);
-  };
+  }, []);
 
   const startTest = () => {
     if (!text) generateNewText();
@@ -58,7 +58,7 @@ const SpeedTyping = () => {
     }
   };
 
-  const calculateStats = () => {
+  const calculateStats = useCallback(() => {
     if (!startTime || !userInput) return;
 
     const currentTime = endTime || Date.now();
@@ -77,17 +77,17 @@ const SpeedTyping = () => {
     
     setWpm(calculatedWpm);
     setAccuracy(calculatedAccuracy);
-  };
+  }, [startTime, userInput, endTime, text]);
 
   useEffect(() => {
     if (isStarted && userInput) {
       calculateStats();
     }
-  }, [userInput, isStarted, startTime, endTime]);
+  }, [userInput, isStarted, calculateStats]);
 
   useEffect(() => {
     generateNewText();
-  }, []);
+  }, [generateNewText]);
 
   const getCharacterColor = (index) => {
     if (index >= userInput.length) return '#666';

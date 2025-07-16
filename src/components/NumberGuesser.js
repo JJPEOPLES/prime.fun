@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const NumberGuesser = () => {
@@ -19,7 +19,7 @@ const NumberGuesser = () => {
     hard: { min: 1, max: 200, maxAttempts: 6 }
   };
 
-  const startNewGame = () => {
+  const startNewGame = useCallback(() => {
     const settings = difficultySettings[difficulty];
     const newTarget = Math.floor(Math.random() * (settings.max - settings.min + 1)) + settings.min;
     setTargetNumber(newTarget);
@@ -30,7 +30,7 @@ const NumberGuesser = () => {
     setGameOver(false);
     setMessage(`I'm thinking of a number between ${settings.min} and ${settings.max}. You have ${settings.maxAttempts} attempts!`);
     setGuessHistory([]);
-  };
+  }, [difficulty]);
 
   const makeGuess = () => {
     const guess = parseInt(userGuess);
@@ -81,7 +81,7 @@ const NumberGuesser = () => {
 
   useEffect(() => {
     startNewGame();
-  }, [difficulty]);
+  }, [startNewGame]);
 
   const getEmoji = (hint) => {
     if (hint === 'Correct!') return '🎉';
